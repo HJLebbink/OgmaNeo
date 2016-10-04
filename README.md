@@ -64,7 +64,7 @@ The simplest usage of the predictive hierarchy involves calling:
 	Predictor ph;
 
 	// 2x2 input field
-	ph.createRandom(cs, prog, { 2, 2 }, pLayerDescs, layerDescs, { -0.01f, 0.01f }, 0.0f, generator);
+	ph.createRandom(cs, prog, { 2, 2 }, pLayerDescs, layerDescs, { -0.01f, 0.01f }, generator, 0.0f);
 ```
 
 You can then step the simulation with:
