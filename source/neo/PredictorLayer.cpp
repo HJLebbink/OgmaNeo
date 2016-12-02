@@ -11,6 +11,8 @@
 #include "SparseFeaturesDelay.h"
 #include "SparseFeaturesSTDP.h"
 
+#include "PlotDebug.h"
+
 using namespace ogmaneo;
 
 void PredictorLayer::createRandom(ComputeSystem &cs, ComputeProgram &plProgram,
@@ -88,12 +90,17 @@ void PredictorLayer::activate(ComputeSystem &cs, const std::vector<cl::Image2D> 
     // Start by clearing stimulus summation buffer to biases
     cs.getQueue().enqueueFillImage(_hiddenSummationTemp[_back], cl_float4{ 0.0f, 0.0f, 0.0f, 0.0f }, zeroOrigin, hiddenRegion);
 
+	//std::cout << "INFO: PredictorLayer:activate: " << visibleStates.size() << ", " << _visibleLayers.size() << std::endl;
+
     // Find up stimulus
     for (int vli = 0; vli < _visibleLayers.size(); vli++) {
         VisibleLayer &vl = _visibleLayers[vli];
         VisibleLayerDesc &vld = _visibleLayerDescs[vli];
 
-        // Derive inputs
+		plots::plotImage(cs, visibleStates[vli], 6.0f, "PredictorLayer:activate:visibleStates" + std::to_string(vli));
+		//plots::plotImage(cs, vl._derivedInput[_back], 6.0f, "PredictorLayer:activate:derivedInput-back" + std::to_string(vli));
+
+		// Derive inputs
         {
             int argIndex = 0;
 
@@ -103,6 +110,8 @@ void PredictorLayer::activate(ComputeSystem &cs, const std::vector<cl::Image2D> 
  
             cs.getQueue().enqueueNDRangeKernel(_deriveInputsKernel, cl::NullRange, cl::NDRange(vld._size.x, vld._size.y));
         }
+
+		//plots::plotImage(cs, vl._derivedInput[_front], 6.0f, "PredictorLayer:activate:derivedInput-front" + std::to_string(vli));
 
         {
             int argIndex = 0;
@@ -150,6 +159,8 @@ void PredictorLayer::learn(ComputeSystem &cs, const cl::Image2D &targets) {
     for (int vli = 0; vli < _visibleLayers.size(); vli++) {
         VisibleLayer &vl = _visibleLayers[vli];
         VisibleLayerDesc &vld = _visibleLayerDescs[vli];
+
+		//plots::plotImage(cs, vl._derivedInput[_back], 3, "PredictorLayer:learn:derivedInputs" + std::to_string(vli));
 
         int argIndex = 0;
 

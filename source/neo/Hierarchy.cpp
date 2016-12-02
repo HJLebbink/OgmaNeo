@@ -7,20 +7,22 @@
 // ----------------------------------------------------------------------------
 
 #include "Hierarchy.h"
-
+//#include "PlotDebug.h"
 #include <assert.h>
 
 using namespace ogmaneo;
 
 void Hierarchy::simStep(std::vector<ValueField2D> &inputs, bool learn) {
     // Write input
-    for (int i = 0; i < _inputImages.size(); i++)
-        _resources->_cs->getQueue().enqueueWriteImage(_inputImages[i], CL_TRUE, { 0, 0, 0 }, { static_cast<cl::size_type>(inputs[i].getSize().x), static_cast<cl::size_type>(inputs[i].getSize().y), 1 }, 0, 0, inputs[i].getData().data());
-
+	for (int i = 0; i < _inputImages.size(); i++) {
+		//plots::plotImage(inputs[i], 4, "Hierarchy:simStep:input" + std::to_string(i));
+		_resources->_cs->getQueue().enqueueWriteImage(_inputImages[i], CL_TRUE, { 0, 0, 0 }, { static_cast<cl::size_type>(inputs[i].getSize().x), static_cast<cl::size_type>(inputs[i].getSize().y), 1 }, 0, 0, inputs[i].getData().data());
+	}
     _p.simStep(*_resources->_cs, _inputImages, _inputImages, _rng, learn);
 
     // Get predictions
     for (int i = 0; i < _predictions.size(); i++) {
+		//plots::plotImage(*_resources->_cs, _p.getHiddenPrediction()[_back], 6, "Hierarchy:simStep:hiddenPrediction" + std::to_string(i));
         _readoutLayers[i].activate(*_resources->_cs, { _p.getHiddenPrediction()[_back] }, _rng);
 
         if (learn)
@@ -29,7 +31,8 @@ void Hierarchy::simStep(std::vector<ValueField2D> &inputs, bool learn) {
         _readoutLayers[i].stepEnd(*_resources->_cs);
 
         _resources->_cs->getQueue().enqueueReadImage(_readoutLayers[i].getHiddenStates()[_back], CL_TRUE, { 0, 0, 0 }, { static_cast<cl::size_type>(_predictions[i].getSize().x), static_cast<cl::size_type>(_predictions[i].getSize().y), 1 }, 0, 0, _predictions[i].getData().data());
-    }
+		//plots::plotImage(_predictions[i], 3, "Hierarchy:simStep:Prediction" + std::to_string(i));
+	}
 }
 
 void Hierarchy::load(const schemas::Hierarchy* fbHierarchy, ComputeSystem &cs) {

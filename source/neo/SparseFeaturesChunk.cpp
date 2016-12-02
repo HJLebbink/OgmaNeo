@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------
 
 #include "SparseFeaturesChunk.h"
+//#include "PlotDebug.h"
 
 using namespace ogmaneo;
 
@@ -122,8 +123,10 @@ void SparseFeaturesChunk::activate(ComputeSystem &cs, const std::vector<cl::Imag
     for (int vli = 0; vli < _visibleLayers.size(); vli++) {
         VisibleLayer &vl = _visibleLayers[vli];
         VisibleLayerDesc &vld = _visibleLayerDescs[vli];
-
-        {
+		
+		//plots::plotImage(cs, visibleStates[vli], 6.0f, "SFChunk:activate:visibleStates" + std::to_string(vli));
+		
+		{
             int argIndex = 0;
 
             _deriveInputsKernel.setArg(argIndex++, visibleStates[vli]);
@@ -133,6 +136,7 @@ void SparseFeaturesChunk::activate(ComputeSystem &cs, const std::vector<cl::Imag
 
             cs.getQueue().enqueueNDRangeKernel(_deriveInputsKernel, cl::NullRange, cl::NDRange(vld._size.x, vld._size.y));
         }
+		//plots::plotImage(cs, vl._derivedInput[_front], 6.0f, "SFChunk:activate:derivedInput" + std::to_string(vli));
 
         // Add sample
         {
@@ -145,8 +149,9 @@ void SparseFeaturesChunk::activate(ComputeSystem &cs, const std::vector<cl::Imag
 
             cs.getQueue().enqueueNDRangeKernel(_addSampleKernel, cl::NullRange, cl::NDRange(vld._size.x, vld._size.y));
         }
-
-        {
+		//plots::plotImage(cs, vl._samples[_front], 6.0f, "SFChunk:activate:samples" + std::to_string(vli));
+		
+		{
             int argIndex = 0;
 
             _stimulusKernel.setArg(argIndex++, vl._samples[_front]);
@@ -164,7 +169,9 @@ void SparseFeaturesChunk::activate(ComputeSystem &cs, const std::vector<cl::Imag
             cs.getQueue().enqueueNDRangeKernel(_stimulusKernel, cl::NullRange, cl::NDRange(_hiddenSize.x, _hiddenSize.y));
         }
 
-        // Swap buffers
+		//plots::plotImage(cs, _hiddenSummationTemp[_front], 6.0f, "SFChunk:activate:hiddenSummation" + std::to_string(vli));
+		
+		// Swap buffers
         std::swap(_hiddenSummationTemp[_front], _hiddenSummationTemp[_back]);
     }
 

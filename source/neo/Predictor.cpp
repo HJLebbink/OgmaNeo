@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 
 #include "Predictor.h"
-
+//#include "PlotDebug.h"
 #include <iostream>
 
 using namespace ogmaneo;
@@ -54,6 +54,7 @@ void Predictor::simStep(ComputeSystem &cs, const std::vector<cl::Image2D> &input
     for (int l = static_cast<int>(_pLayers.size()) - 1; l >= 0; l--) {
         if (_h.getLayer(l)._tpReset || _h.getLayer(l)._tpNextReset) {
             cl::Image2D target = _h.getLayer(l)._sf->getHiddenStates()[_back];
+			//plots::plotImage(cs, target, 6.0f, "Predictor:simStep:target" + std::to_string(l));
 
             if (l != _pLayers.size() - 1) {
                 _pLayers[l].activate(cs, std::vector<cl::Image2D>{ _h.getLayer(l)._sf->getHiddenStates()[_back], _pLayers[l + 1].getHiddenStates()[_back] }, rng);
