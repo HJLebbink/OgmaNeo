@@ -6,9 +6,9 @@
 //  in the OGMANEO_LICENSE.md file included in this distribution.
 // ----------------------------------------------------------------------------
 
+#include <assert.h>
 #include "Hierarchy.h"
 //#include "PlotDebug.h"
-#include <assert.h>
 
 using namespace ogmaneo;
 

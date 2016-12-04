@@ -11,7 +11,7 @@
 #include "SparseFeaturesDelay.h"
 #include "SparseFeaturesSTDP.h"
 
-#include "PlotDebug.h"
+//#include "PlotDebug.h"
 
 using namespace ogmaneo;
 
@@ -97,7 +97,7 @@ void PredictorLayer::activate(ComputeSystem &cs, const std::vector<cl::Image2D> 
         VisibleLayer &vl = _visibleLayers[vli];
         VisibleLayerDesc &vld = _visibleLayerDescs[vli];
 
-		plots::plotImage(cs, visibleStates[vli], 6.0f, "PredictorLayer:activate:visibleStates" + std::to_string(vli));
+		//plots::plotImage(cs, visibleStates[vli], 6.0f, "PredictorLayer:activate:visibleStates" + std::to_string(vli));
 		//plots::plotImage(cs, vl._derivedInput[_back], 6.0f, "PredictorLayer:activate:derivedInput-back" + std::to_string(vli));
 
 		// Derive inputs

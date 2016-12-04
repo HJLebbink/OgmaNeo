@@ -57,9 +57,10 @@ namespace ogmaneo {
     \brief Shared resources
     */
     class OGMA_API Resources {
-    private:
-        std::shared_ptr<ComputeSystem> _cs;
-        std::unordered_map<std::string, std::shared_ptr<ComputeProgram>> _programs;
+	public:
+		std::shared_ptr<ComputeSystem> _cs;
+	private:
+		std::unordered_map<std::string, std::shared_ptr<ComputeProgram>> _programs;
     
     public:
         Resources()
@@ -126,6 +127,36 @@ namespace ogmaneo {
         std::vector<float> &getData() {
             return _data;
         }
+
+		float getMaxValue() const {
+			float maxValue = _data[0];
+			for (size_t i = 1; i < _data.size(); ++i) {
+				if (_data[i] > maxValue) maxValue = _data[i];
+			}
+			return maxValue;
+		}
+
+		float getMinValue() const {
+			float minValue = _data[0];
+			for (size_t i = 1; i < _data.size(); ++i) {
+				if (_data[i] < minValue) minValue = _data[i];
+			}
+			return minValue;
+		}
+
+		void rescale(const Vec2f range) {
+			const float minValue = getMinValue();
+			const float maxValue = getMaxValue();
+			
+			for (size_t i = 1; i < _data.size(); ++i) {
+				if (_data[i] > 0) {
+					//TODO
+				}
+				else {
+
+				}
+			}
+		}
 
         //!@{
         /*!
